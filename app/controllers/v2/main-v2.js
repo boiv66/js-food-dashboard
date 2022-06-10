@@ -12,10 +12,21 @@ const stock = document.getElementById("tinhTrang");
 const foodUrl = document.getElementById("hinhMon"); 
 const description = document.getElementById("moTa"); 
 
+
+
 const updateModalBtn = document.getElementById("btnCapNhat"); 
 const addItemModalBtn = document.getElementById("btnThemMon"); 
 
+const addItemBtn = document.getElementById("btnThem"); 
+addItemBtn.addEventListener('click', () => {
+    console.log("A"); 
+   
+  
 
+    addNewItem();
+    foodId.removeAttribute("disabled"); }); 
+
+// addItemBtn.setAttribute("data-dismiss", "modal"); 
 // Get the current food list in local storage 
 // const foodList = JSON.parse(localStorage.getItem("foodList")); 
 
@@ -53,7 +64,7 @@ function addDeleteUpdateButton(foodEl, foodId){
     const deleteBtn = document.querySelector(`.fa-trash-alt.fid${foodId}`);
     const updateBtn = document.querySelector(`.fa-edit.fid${foodId}`); 
     addUpdateToggleEffect(updateBtn); 
-    updateModalBtn.setAttribute("data-dismiss", "modal"); 
+    // updateModalBtn.setAttribute("data-dismiss", "modal"); 
     deleteBtn.addEventListener('click', deleteItem); 
     updateBtn.addEventListener('click', updateItem); 
    
@@ -69,32 +80,65 @@ function deleteItem(event){
     localStorage.removeItem(selectedItem); 
     // console.log(Object.keys(localStorage));
     // location.reload();
-   
+    
+    
     foodTable.innerHTML =''; 
     renderFoodList(); 
 
 }
+function clearInput(){
+    foodId.setAttribute("value", "");
+    foodName.setAttribute("value", ""); 
+    $('#loai').val(''); 
+    price.setAttribute("value", ''); 
+    $('#khuyenMai').val(''); 
+    $('#tinhTrang').val('');  
+    foodUrl.setAttribute("value", '');
+    description.innerHTML =  ''; 
 
+}
 
+function addNewItem(){
+
+    clearInput(); 
+    addItemModalBtn.classList.remove("disabled"); 
+    updateModalBtn.classList.add("disabled");
+    addItemModalBtn.setAttribute("data-dismiss", "modal"); 
+    updateModalBtn.removeAttribute("data-dismiss"); 
+    addItemModalBtn.addEventListener('click', updateFoodItem); 
+}
+
+function renderFoodItemModal(updatedItem){
+    foodId.setAttribute("value", updatedItem.foodId); 
+    foodId.setAttribute("disabled","true");  
+    foodName.setAttribute("value", updatedItem.foodName); 
+    // foodCategory.setAttribute("value", updatedItem.foodCategory); 
+    $('#loai').val(updatedItem.foodCategory);
+    price.setAttribute("value", updatedItem.foodPrice); 
+    $('#khuyenMai').val(updatedItem.discount); 
+    $('#tinhTrang').val(updatedItem.stock);  
+    foodUrl.setAttribute("value", updatedItem.foodImg);
+    description.innerHTML =  updatedItem.description; 
+
+}
 
 function updateItem(event){
     //set attribute of update button with bootstrap toggle 
     const selectedItem = event.target.closest('tr').querySelector('.foodIdTag').innerHTML; 
-    const updateItem = JSON.parse(localStorage.getItem(selectedItem)); 
-    console.log(updateItem); 
-    foodId.setAttribute("value", updateItem.foodId);  
-    foodName.setAttribute("value", updateItem.foodName); 
-    foodCategory.setAttribute("value", updateItem.foodCategory); 
-    price.setAttribute("value", updateItem.foodPrice); 
-    discount.setAttribute("value", updateItem.discount); 
-    stock.setAttribute("value", updateItem.stock); 
-    foodUrl.setAttribute("value", updateItem.foodImg);
-    description.innerHTML =  updateItem.description; 
+    const updatedItem = JSON.parse(localStorage.getItem(selectedItem)); 
+    // console.log(updateItem); 
+
+    renderFoodItemModal(updatedItem); 
+    
+    updateModalBtn.setAttribute("data-dismiss", "modal"); 
+    addItemModalBtn.removeAttribute("data-dismiss"); 
+
 
     addItemModalBtn.classList.add("disabled"); 
+    updateModalBtn.classList.remove("disabled");
 
-
-    updateModalBtn.addEventListener('click', updateFoodItem); 
+    updateModalBtn.addEventListener('click', updateFoodItem);
+    // clearInput();  
 
 
 
@@ -103,7 +147,7 @@ function updateItem(event){
 
 
 function updateFoodItem(){
-    const updateItem = {
+    const updatedItem = {
         foodId: document.getElementById("foodID").value,
         foodName: document.getElementById("tenMon").value,
         foodCategory: document.getElementById("loai").value,
@@ -118,9 +162,10 @@ function updateFoodItem(){
 
     }; 
 
-    localStorage.setItem(`${updateItem.foodId}`, JSON.stringify(updateItem)); 
+    localStorage.setItem(`${updatedItem.foodId}`, JSON.stringify(updatedItem)); 
     // console.log(JSON.parse(localStorage)); 
 
+    
     foodTable.innerHTML =''; 
     renderFoodList(); 
 
